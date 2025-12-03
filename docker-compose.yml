@@ -1,0 +1,12 @@
+version: '3.1'
+services:
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_DATABASE: tasklist
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3306:3306"
