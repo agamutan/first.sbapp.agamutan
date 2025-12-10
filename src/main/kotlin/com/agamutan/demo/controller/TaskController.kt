@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/tasks")
+@RequestMapping("/api/tasks")
 class TaskController(
     private val service: TaskService
 ) {
