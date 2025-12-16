@@ -18,6 +18,7 @@ class NatsConfig {
     @Value("\${nats.server-url}")
     private lateinit var natsServerUrl: String
 
+    @Volatile
     private var connection: Connection? = null
 
     @Bean

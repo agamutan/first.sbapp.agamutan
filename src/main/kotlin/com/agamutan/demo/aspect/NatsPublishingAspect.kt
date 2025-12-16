@@ -6,6 +6,7 @@ import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.AfterReturning
 import org.aspectj.lang.annotation.Aspect
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -19,7 +20,8 @@ import java.time.Instant
 @Component
 class NatsPublishingAspect(
     private val natsPublisher: NatsPublisher,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    @Value("\${nats.subject}") private val subject: String
 ) {
 
     private val logger = LoggerFactory.getLogger(NatsPublishingAspect::class.java)
@@ -58,13 +60,14 @@ class NatsPublishingAspect(
                 try {
                     objectMapper.writeValueAsString(it)
                 } catch (e: Exception) {
+                    logger.warn("Failed to serialize request body to JSON: {}", e.message, e)
                     null
                 }
             }
 
             val event = mapOf(
                 "timestamp" to Instant.now().toString(),
-                "subject" to "app.events",
+                "subject" to subject,
                 "httpMethod" to httpMethod,
                 "path" to path,
                 "principal" to principal,

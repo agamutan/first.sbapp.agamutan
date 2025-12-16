@@ -21,7 +21,9 @@ class NatsSubscriber {
     @Value("\${nats.subject}")
     private lateinit var subject: String
 
+    @Volatile
     private var connection: Connection? = null
+    @Volatile
     private var dispatcher: Dispatcher? = null
 
     @PostConstruct
