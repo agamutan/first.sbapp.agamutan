@@ -4,11 +4,13 @@ import io.nats.client.Connection
 import io.nats.client.Nats
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import jakarta.annotation.PreDestroy
 
 @Configuration
+@ConditionalOnProperty(name = ["nats.enabled"], havingValue = "true", matchIfMissing = true)
 class NatsConfig {
 
     private val logger = LoggerFactory.getLogger(NatsConfig::class.java)
