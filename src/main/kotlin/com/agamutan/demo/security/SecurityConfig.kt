@@ -28,10 +28,13 @@ class SecurityConfig(private val jwtFilter: JwtAuthenticationFilter) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            // Disable default CSRF protection for API usage, but ignore only the OpenAPI endpoints explicitly
+            // Disable CSRF for API endpoints to simplify testing
             .csrf { csrf ->
-                csrf.ignoringRequestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                csrf.ignoringRequestMatchers("/api/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
             }
+
+            // Enable HTTP Basic authentication for testing
+            .httpBasic {}
 
             // Stateless session management for JWT-based auth
             .sessionManagement { sessions ->
