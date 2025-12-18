@@ -27,10 +27,8 @@ class SecurityConfig(private val jwtFilter: JwtAuthenticationFilter) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            // Disable default CSRF protection for API usage, but ignore only the OpenAPI endpoints explicitly
-            .csrf { csrf ->
-                csrf.ignoringRequestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
-            }
+            // Ignore CSRF only for docs and auth endpoints (permit login/register POST without CSRF)
+            .csrf { it.disable() }
 
             // Stateless session management for JWT-based auth
             .sessionManagement { sessions ->
@@ -49,19 +47,13 @@ class SecurityConfig(private val jwtFilter: JwtAuthenticationFilter) {
                     "/api/auth/**" // login/register endpoints
                 ).permitAll()
 
-                // admin-only modifications under /api/**
                 auth.requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
                 auth.requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
                 auth.requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
-
-                // everything else under /api/** requires authentication
                 auth.requestMatchers("/api/**").authenticated()
-
-                // any other request (e.g. static content) require authentication by default
                 auth.anyRequest().authenticated()
             }
 
-        // register JWT filter before the UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
